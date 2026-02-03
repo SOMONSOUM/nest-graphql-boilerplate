@@ -1,4 +1,3 @@
-import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
 import { AppService } from './app.service';
 import {
   Args,
