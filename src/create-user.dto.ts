@@ -1,5 +1,21 @@
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
-import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
+import {
+  Field,
+  InputType,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
+import { IsEmail, IsEnum, IsString, IsStrongPassword } from 'class-validator';
+import { BaseResponse } from './common/response';
+
+export enum AllowedColor {
+  RED,
+  GREEN,
+  BLUE,
+}
+
+registerEnumType(AllowedColor, {
+  name: 'AllowedColor',
+});
 
 @InputType()
 export class CreateUser {
@@ -18,13 +34,26 @@ export class CreateUser {
     minSymbols: 1,
   })
   password: string;
+
+  @Field(() => AllowedColor)
+  @IsEnum(AllowedColor)
+  favoriteColor: AllowedColor;
 }
 
 @ObjectType()
-export class CreateUserResponse {
+export class User {
   @Field(() => String, { name: 'email' })
   email: string;
 
   @Field(() => String, { name: 'password' })
   password: string;
+
+  @Field(() => AllowedColor, { name: 'favoriteColor' })
+  favoriteColor: AllowedColor;
+}
+
+@ObjectType()
+export class CreateUserResponse extends BaseResponse {
+  @Field(() => User)
+  data!: User;
 }

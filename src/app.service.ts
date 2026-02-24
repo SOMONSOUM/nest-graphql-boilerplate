@@ -10,6 +10,7 @@ import {
   BOOTSTRAP_MESSAGE,
 } from './constants';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AllowedColor } from './create-user.dto';
 
 ConfigModule.forRoot({
   isGlobal: true,
@@ -40,7 +41,7 @@ export class AppService
     return 'Hello World!';
   }
 
-  createUser(email: string, password: string) {
-    return { email, password };
+  createUser(email: string, password: string, favoriteColor: AllowedColor) {
+    return { email, password, favoriteColor };
   }
 }

@@ -2,9 +2,24 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type CreateUserResponse {
+type User {
   email: String!
   password: String!
+  favoriteColor: AllowedColor!
+}
+
+enum AllowedColor {
+  RED
+  GREEN
+  BLUE
+}
+
+type CreateUserResponse {
+  statusCode: Int!
+  success: Boolean!
+  message: String
+  timestamp: String!
+  data: User!
 }
 
 type Query {
@@ -18,4 +33,5 @@ type Mutation {
 input CreateUser {
   email: String!
   password: String!
+  favoriteColor: AllowedColor!
 }

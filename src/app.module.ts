@@ -6,14 +6,15 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
-import { formatGqlError } from './utils';
 import { Request, Response } from 'express';
 import databaseConfig from './database/database.config';
 import { LoggerMiddleware } from './common/middlewares';
 import { LoggerModule } from './common/logger/logger.module';
-import { minutes, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { minutes, seconds, ThrottlerModule } from '@nestjs/throttler';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { GraphQLThrottlerGuard } from './common/guard';
+import { GraphQLFormattedError } from 'graphql';
+import { GqlValidationExceptionFilter } from './common/filter';
 
 @Module({
   imports: [
@@ -34,14 +35,46 @@ import { GraphQLThrottlerGuard } from './common/guard';
       persistedQueries: {
         ttl: 900,
       },
-      formatError: formatGqlError,
+      formatError: (error: GraphQLFormattedError) => {
+        const validationErrors =
+          (error.extensions as { validationErrors?: unknown[] } | undefined)
+            ?.validationErrors ??
+          (
+            error.extensions as
+              | { originalError?: { response?: { errors?: unknown[] } } }
+              | undefined
+          )?.originalError?.response?.errors;
+
+        if (validationErrors && validationErrors.length > 0) {
+          return {
+            statusCode: 409,
+            success: false,
+            timestamp: new Date().toISOString(),
+            message: 'Validation failed',
+            errors: validationErrors,
+          };
+        }
+
+        return error;
+      },
     }),
     LoggerModule,
     ThrottlerModule.forRoot({
       throttlers: [
         {
+          name: 'short',
+          ttl: seconds(1), // 1 second
+          limit: 3, // 3 requests
+        },
+        {
+          name: 'medium',
+          ttl: seconds(10), // 10 seconds
+          limit: 20, // 20 requests
+        },
+        {
+          name: 'long',
           ttl: minutes(1), // 1 minute
-          limit: 10,
+          limit: 100, // 100 requests
         },
       ],
     }),
@@ -52,6 +85,10 @@ import { GraphQLThrottlerGuard } from './common/guard';
     {
       provide: APP_GUARD,
       useClass: GraphQLThrottlerGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GqlValidationExceptionFilter,
     },
   ],
 })

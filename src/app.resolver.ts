@@ -1,13 +1,9 @@
 import { AppService } from './app.service';
-import {
-  Args,
-  Field,
-  Mutation,
-  ObjectType,
-  Query,
-  Resolver,
-} from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateUser, CreateUserResponse } from './create-user.dto';
+import { UseInterceptors } from '@nestjs/common';
+import { LoggingInterceptor } from './common/interceptor';
+import { buildResponse } from './utils/response.util';
 
 @Resolver()
 export class AppResolver {
@@ -18,8 +14,20 @@ export class AppResolver {
     return this.appService.getHello();
   }
 
+  @UseInterceptors(LoggingInterceptor)
   @Mutation(() => CreateUserResponse)
   createUser(@Args('input') input: CreateUser) {
-    return this.appService.createUser(input.email, input.password);
+    const user = this.appService.createUser(
+      input.email,
+      input.password,
+      input.favoriteColor,
+    );
+
+    return buildResponse({
+      statusCode: 200,
+      success: true,
+      message: 'User created successfully',
+      data: user,
+    });
   }
 }

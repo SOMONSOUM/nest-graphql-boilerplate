@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
+import { formatValidationErrors } from './utils/validation.util';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -12,20 +14,37 @@ async function bootstrap() {
   // Global validation pipe for request validation
   app.useGlobalPipes(
     new ValidationPipe({
-      exceptionFactory: (errors) => {
-        const messages = errors
-          .flatMap((error) =>
-            error.constraints ? Object.values(error.constraints) : [],
-          )
-          .map((msg) => msg.toUpperCase().replace(/\s+/g, '_'));
-        return new BadRequestException({ messages, success: false });
-      },
+      whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-      whitelist: true,
-      disableErrorMessages: node_env === 'production',
+      stopAtFirstError: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+      exceptionFactory: (errors) =>
+        new BadRequestException({
+          message: 'Validation failed',
+          errors: formatValidationErrors(errors),
+        }),
     }),
   );
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      crossOriginEmbedderPolicy: false,
+    }),
+  );
+
+  app.enableCors({
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Apollo-Require-Preflight',
+    ],
+  });
 
   const port = configService.get<number>('PORT') ?? 8080;
 
