@@ -1,8 +1,8 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
-import { IsInt, Min } from 'class-validator';
+import { ArgsType, Field, Int } from '@nestjs/graphql';
+import { IsInt, IsOptional, Min } from 'class-validator';
 
-@InputType()
-export class PaginationInput {
+@ArgsType()
+export class PaginationArgs {
   @Field(() => Int, {
     nullable: true,
     description: 'Number of items to skip from query result',
@@ -17,5 +17,6 @@ export class PaginationInput {
   })
   @IsInt({ message: 'Take argument must be integer!' })
   @Min(1, { message: 'Take must not be less then 0!' })
+  @IsOptional()
   limit: number = 10;
 }

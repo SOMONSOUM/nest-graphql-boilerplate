@@ -1,4 +1,4 @@
-export * from "./data.response";
-export * from './pagination-response.dto';
+export * from './data.response';
 export * from './remove-response.dto';
-export * from './pagination.args';
+export * from './pagination-args.dto';
+export * from './paginated-response.dto';
