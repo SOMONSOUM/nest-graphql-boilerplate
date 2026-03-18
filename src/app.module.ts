@@ -15,6 +15,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { GraphQLThrottlerGuard } from './common/guard';
 import { GraphQLFormattedError } from 'graphql';
 import { GqlValidationExceptionFilter } from './common/filter';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { GqlValidationExceptionFilter } from './common/filter';
         },
       ],
     }),
+    AuthModule,
   ],
   providers: [
     AppResolver,

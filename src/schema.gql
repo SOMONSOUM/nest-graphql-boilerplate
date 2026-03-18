@@ -22,16 +22,49 @@ type CreateUserResponse {
   data: User!
 }
 
+type GetUserProfile {
+  id: Int!
+  email: String!
+  username: String
+  isActive: Boolean!
+}
+
+type GetUserProfileResponse {
+  statusCode: Int!
+  success: Boolean!
+  message: String
+  timestamp: String!
+  data: GetUserProfile
+}
+
+type Login {
+  redirectUri: String!
+}
+
+type LoginResponse {
+  statusCode: Int!
+  success: Boolean!
+  message: String
+  timestamp: String!
+  data: Login
+}
+
 type Query {
   getHello: String!
+  login: LoginResponse!
 }
 
 type Mutation {
   createUser(input: CreateUser!): CreateUserResponse!
+  getProfile(input: GetUserProfileInput!): GetUserProfileResponse!
 }
 
 input CreateUser {
   email: String!
   password: String!
   favoriteColor: AllowedColor!
+}
+
+input GetUserProfileInput {
+  accessToken: String!
 }
