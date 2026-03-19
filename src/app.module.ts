@@ -7,7 +7,6 @@ import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { Request, Response } from 'express';
-import databaseConfig from './database/database.config';
 import { LoggerMiddleware } from './common/middlewares';
 import { LoggerModule } from './common/logger/logger.module';
 import { minutes, seconds, ThrottlerModule } from '@nestjs/throttler';
@@ -16,12 +15,14 @@ import { GraphQLThrottlerGuard } from './common/guard';
 import { GraphQLFormattedError } from 'graphql';
 import { GqlValidationExceptionFilter } from './common/filter';
 import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig],
+      envFilePath: '.env',
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -79,7 +80,9 @@ import { AuthModule } from './modules/auth/auth.module';
         },
       ],
     }),
+    DatabaseModule,
     AuthModule,
+    UserModule,
   ],
   providers: [
     AppResolver,

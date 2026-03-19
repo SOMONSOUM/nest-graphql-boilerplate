@@ -1,15 +1,20 @@
-import { registerAs } from '@nestjs/config';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { DataSourceOptions } from 'typeorm';
 
-export default registerAs(
-  'database',
-  (): TypeOrmModuleOptions => ({
-    type: 'mysql',
-    url: process.env.DATABASE_URL,
-    autoLoadEntities: true,
-    logging: process.env.NODE_ENV !== 'production',
-    migrationsRun: false,
-    migrations: ['dist/src/database/migrations/*.js'],
-    synchronize: false,
-  }),
-);
+ConfigModule.forRoot({
+  isGlobal: true,
+  envFilePath: '.env',
+});
+
+const configService = new ConfigService();
+const databaseConfig: DataSourceOptions = {
+  type: 'mysql',
+  url: configService.get('DATABASE_URL'),
+  entities: ['dist/**/*.entity.js'],
+  migrations: ['dist/src/database/migrations/*.js'],
+  migrationsRun: false,
+  migrationsTableName: 'migrations',
+  synchronize: true,
+};
+
+export default databaseConfig;

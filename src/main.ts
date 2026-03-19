@@ -9,7 +9,6 @@ import { formatValidationErrors } from './utils/validation.util';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get<ConfigService>(ConfigService);
-  const node_env = configService.getOrThrow<string>('NODE_ENV');
 
   // Global validation pipe for request validation
   app.useGlobalPipes(
