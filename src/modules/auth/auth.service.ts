@@ -9,18 +9,10 @@ export class AuthService {
   async login() {
     const { data, error } = await oauth.getLoginToken();
 
-    if (error) {
-      throw new GraphQLError(error.message, {
+    if (!data || error) {
+      throw new GraphQLError(error?.message ?? 'Invalid client credentials', {
         extensions: {
-          code: error.code,
-        },
-      });
-    }
-
-    if (!data) {
-      throw new GraphQLError('Client not found', {
-        extensions: {
-          code: 'CLIENT_NOT_FOUND',
+          code: error?.code ?? 'INVALID_CLIENT_CREDENTIALS',
         },
       });
     }
