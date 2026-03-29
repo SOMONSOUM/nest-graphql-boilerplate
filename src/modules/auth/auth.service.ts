@@ -22,6 +22,57 @@ export class AuthService {
     };
   }
 
+  async callBack(code: string) {
+    const { data, error } = await oauth.validateAuthorizationCode(code);
+    if (error) {
+      throw new GraphQLError(error.message, {
+        extensions: {
+          code: error.code,
+        },
+      });
+    }
+
+    if (!data?.payload || !data.isValid) {
+      throw new GraphQLError(
+        'Failed to exchange authorization code for tokens',
+        {
+          extensions: {
+            code: 'TOKEN_EXCHANGE_FAILED',
+          },
+        },
+      );
+    }
+
+    return {
+      accessToken: data?.payload?.accessToken,
+      refreshToken: data?.payload?.refreshToken,
+    };
+  }
+
+  async refreshToken(refreshToken: string) {
+    const { data, error } = await oauth.refreshToken(refreshToken);
+    if (error) {
+      throw new GraphQLError(error.message, {
+        extensions: {
+          code: error.code,
+        },
+      });
+    }
+
+    if (!data) {
+      throw new GraphQLError('Failed to refresh access token', {
+        extensions: {
+          code: 'TOKEN_REFRESH_FAILED',
+        },
+      });
+    }
+
+    return {
+      accessToken: data?.accessToken,
+      refreshToken: data?.refreshToken,
+    };
+  }
+
   async getCurrentUser(accessToken: string) {
     const { data, error } = await oauth.lookupUserProfile(accessToken);
     if (error) {
@@ -41,7 +92,7 @@ export class AuthService {
     }
 
     return {
-      id: data?.id,
+      userId: data?.id,
       email: data?.email,
       username: data?.username,
       isActive: data?.isActive,
