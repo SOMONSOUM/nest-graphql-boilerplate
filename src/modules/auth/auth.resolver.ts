@@ -5,6 +5,7 @@ import {
   GetUserProfile,
   GetUserProfileResponse,
   LoginResponse,
+  LogoutResponse,
   RefreshTokenResponse,
 } from './dto/response';
 import { buildResponse } from 'src/utils/response.util';
@@ -60,6 +61,18 @@ export class AuthResolver {
       success: true,
       message: 'User profile fetched successfully',
       data: user,
+    });
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Query(() => LogoutResponse, { name: 'logout' })
+  async logout(@Args('refreshToken') refreshToken: string) {
+    const data = await this.authService.logout(refreshToken);
+    return buildResponse({
+      statusCode: 200,
+      success: true,
+      message: 'Logout successful',
+      data,
     });
   }
 }

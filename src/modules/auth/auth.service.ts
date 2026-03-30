@@ -98,4 +98,19 @@ export class AuthService {
       isActive: data?.isActive,
     };
   }
+
+  async logout(refreshToken: string) {
+    const { error } = await oauth.logout(refreshToken);
+    if (error) {
+      throw new GraphQLError(error.message, {
+        extensions: {
+          code: error.code,
+        },
+      });
+    }
+
+    return {
+      success: true,
+    };
+  }
 }

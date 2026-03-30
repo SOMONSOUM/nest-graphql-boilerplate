@@ -75,12 +75,25 @@ type RefreshTokenResponse {
   data: ResfreshToken
 }
 
+type Logout {
+  success: Boolean!
+}
+
+type LogoutResponse {
+  statusCode: Int!
+  success: Boolean!
+  message: String
+  timestamp: String!
+  data: Logout
+}
+
 type Query {
   getHello: String!
   login: LoginResponse!
   callBack(input: CallBackInput!): CallBackResponse!
   refreshToken(input: RefreshTokenInput!): RefreshTokenResponse!
   getProfile: GetUserProfileResponse!
+  logout(refreshToken: String!): LogoutResponse!
 }
 
 input CallBackInput {
