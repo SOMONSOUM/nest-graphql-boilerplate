@@ -23,7 +23,7 @@ type CreateUserResponse {
 }
 
 type GetUserProfile {
-  id: Int!
+  userId: Int!
   email: String!
   username: String
   isActive: Boolean!
@@ -49,22 +49,67 @@ type LoginResponse {
   data: Login
 }
 
+type CallBack {
+  accessToken: String
+  refreshToken: String
+}
+
+type CallBackResponse {
+  statusCode: Int!
+  success: Boolean!
+  message: String
+  timestamp: String!
+  data: CallBack
+}
+
+type ResfreshToken {
+  accessToken: String
+  refreshToken: String
+}
+
+type RefreshTokenResponse {
+  statusCode: Int!
+  success: Boolean!
+  message: String
+  timestamp: String!
+  data: ResfreshToken
+}
+
+type Logout {
+  success: Boolean!
+}
+
+type LogoutResponse {
+  statusCode: Int!
+  success: Boolean!
+  message: String
+  timestamp: String!
+  data: Logout
+}
+
 type Query {
   getHello: String!
   login: LoginResponse!
+  callBack(input: CallBackInput!): CallBackResponse!
+  refreshToken(input: RefreshTokenInput!): RefreshTokenResponse!
+  getProfile: GetUserProfileResponse!
+  logout(refreshToken: String!): LogoutResponse!
+}
+
+input CallBackInput {
+  code: String!
+}
+
+input RefreshTokenInput {
+  refreshToken: String!
 }
 
 type Mutation {
   createUser(input: CreateUser!): CreateUserResponse!
-  getProfile(input: GetUserProfileInput!): GetUserProfileResponse!
 }
 
 input CreateUser {
   email: String!
   password: String!
   favoriteColor: AllowedColor!
-}
-
-input GetUserProfileInput {
-  accessToken: String!
 }

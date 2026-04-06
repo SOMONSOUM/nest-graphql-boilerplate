@@ -4,7 +4,7 @@ import { BaseResponse } from 'src/common/response';
 @ObjectType()
 export class GetUserProfile {
   @Field(() => Int, { nullable: false })
-  id: number;
+  userId: number;
 
   @Field(() => String, { nullable: false })
   email: string;

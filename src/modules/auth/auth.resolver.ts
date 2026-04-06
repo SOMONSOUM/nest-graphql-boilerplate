@@ -1,8 +1,18 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
-import { GetUserProfileResponse, LoginResponse } from './dto/response';
+import {
+  CallBackResponse,
+  GetUserProfile,
+  GetUserProfileResponse,
+  LoginResponse,
+  LogoutResponse,
+  RefreshTokenResponse,
+} from './dto/response';
 import { buildResponse } from 'src/utils/response.util';
-import { GetUserProfileInput } from './dto/input';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from './guard/gql-auth.guard';
+import { CurrentUser } from './decorator';
+import { CallBackInput, RefreshTokenInput } from './dto/input';
 
 @Resolver()
 export class AuthResolver {
@@ -19,15 +29,50 @@ export class AuthResolver {
     });
   }
 
-  @Mutation(() => GetUserProfileResponse, { name: 'getProfile' })
+  @Query(() => CallBackResponse, { name: 'callBack' })
+  async callBack(@Args('input') input: CallBackInput) {
+    const data = await this.authService.callBack(input.code);
+    return buildResponse({
+      statusCode: 200,
+      success: true,
+      message: 'Callback successful',
+      data,
+    });
+  }
+
+  @Query(() => RefreshTokenResponse, { name: 'refreshToken' })
+  async refreshToken(@Args('input') input: RefreshTokenInput) {
+    const data = await this.authService.refreshToken(input.refreshToken);
+    return buildResponse({
+      statusCode: 200,
+      success: true,
+      message: 'Refresh token successful',
+      data,
+    });
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Query(() => GetUserProfileResponse, { name: 'getProfile' })
   async getProfile(
-    @Args('input') input: GetUserProfileInput,
+    @CurrentUser() user: GetUserProfile,
   ): Promise<GetUserProfileResponse> {
     return buildResponse({
       statusCode: 200,
       success: true,
       message: 'User profile fetched successfully',
-      data: await this.authService.getCurrentUser(input.accessToken),
+      data: user,
+    });
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Query(() => LogoutResponse, { name: 'logout' })
+  async logout(@Args('refreshToken') refreshToken: string) {
+    const data = await this.authService.logout(refreshToken);
+    return buildResponse({
+      statusCode: 200,
+      success: true,
+      message: 'Logout successful',
+      data,
     });
   }
 }
