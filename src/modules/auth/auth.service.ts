@@ -7,19 +7,23 @@ export class AuthService {
   constructor() {}
 
   async login() {
-    const { data, error } = await oauth.getLoginToken();
+    try {
+      const { data, error } = await oauth.getLoginToken();
 
-    if (!data || error) {
-      throw new GraphQLError(error?.message ?? 'Invalid client credentials', {
-        extensions: {
-          code: error?.code ?? 'INVALID_CLIENT_CREDENTIALS',
-        },
-      });
+      if (!data || error) {
+        throw new GraphQLError(error?.message ?? 'Invalid client credentials', {
+          extensions: {
+            code: error?.code ?? 'INVALID_CLIENT_CREDENTIALS',
+          },
+        });
+      }
+
+      return {
+        ...data,
+      };
+    } catch (error) {
+      console.log({ error });
     }
-
-    return {
-      ...data,
-    };
   }
 
   async getCurrentUser(accessToken: string) {
