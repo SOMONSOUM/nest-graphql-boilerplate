@@ -3,24 +3,17 @@
 # ------------------------------------------------------
 
 type User {
+  id: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
   email: String!
-  password: String!
-  favoriteColor: AllowedColor!
+  username: String
 }
 
-enum AllowedColor {
-  RED
-  GREEN
-  BLUE
-}
-
-type CreateUserResponse {
-  statusCode: Int!
-  success: Boolean!
-  message: String
-  timestamp: String!
-  data: User!
-}
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type GetUserProfile {
   userId: Int!
@@ -87,6 +80,14 @@ type LogoutResponse {
   data: Logout
 }
 
+type CreateUserResponse {
+  statusCode: Int!
+  success: Boolean!
+  message: String
+  timestamp: String!
+  data: User
+}
+
 type Query {
   getHello: String!
   login: LoginResponse!
@@ -105,11 +106,11 @@ input RefreshTokenInput {
 }
 
 type Mutation {
-  createUser(input: CreateUser!): CreateUserResponse!
+  registerUser(input: CreateUserInput!): CreateUserResponse!
 }
 
-input CreateUser {
+input CreateUserInput {
   email: String!
+  username: String
   password: String!
-  favoriteColor: AllowedColor!
 }

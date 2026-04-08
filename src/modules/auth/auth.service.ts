@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
 import { OAuthClientService } from '@/shared/oauth/client.service';
+import { AccountRepository, UserRepository } from '../user/repository';
+import { AuthProvider } from '../user/entity';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly clientService: OAuthClientService) {}
+  constructor(
+    private readonly clientService: OAuthClientService,
+    private readonly userRepository: UserRepository,
+    private readonly accountRepository: AccountRepository,
+  ) {}
 
   async login() {
     try {
@@ -46,6 +52,24 @@ export class AuthService {
           },
         },
       );
+    }
+
+    const user = await this.userRepository.findOneBy({
+      email: data.payload.email,
+    });
+
+    if (!user) {
+      const user = this.userRepository.create({
+        email: data.payload.email,
+        accounts: [
+          {
+            authProvider: AuthProvider.MOC_DIGIKEY,
+            providerId: data.payload.id,
+          },
+        ],
+      });
+
+      await this.userRepository.save(user);
     }
 
     return {
