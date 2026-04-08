@@ -12,8 +12,10 @@ export class UserService {
   ) {}
 
   async registerUser(dto: CreateUserInput) {
-    const existingUser = await this.userRepository.findOneBy({
-      email: dto.email,
+    const existingUser = await this.userRepository.findOne({
+      where: {
+        email: dto.email,
+      },
     });
 
     if (existingUser) {

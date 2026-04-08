@@ -54,13 +54,20 @@ export class AuthService {
       );
     }
 
-    const user = await this.userRepository.findOneBy({
-      email: data.payload.email,
+    const user = await this.userRepository.findOne({
+      where: {
+        email: data.payload.email,
+        accounts: {
+          authProvider: AuthProvider.MOC_DIGIKEY,
+          providerId: data.payload.id,
+        },
+      },
     });
 
     if (!user) {
       const user = this.userRepository.create({
         email: data.payload.email,
+        username: data.payload.username,
         accounts: [
           {
             authProvider: AuthProvider.MOC_DIGIKEY,
