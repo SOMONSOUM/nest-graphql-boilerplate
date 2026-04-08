@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { BaseResponse } from 'src/common/response';
+import { BaseResponse } from '@/common/response';
 
 @ObjectType()
 export class Login {

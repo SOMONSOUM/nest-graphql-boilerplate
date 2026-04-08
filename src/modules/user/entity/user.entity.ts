@@ -1,5 +1,5 @@
 import { Field } from '@nestjs/graphql';
-import { BaseEntity } from 'src/shared/entities';
+import { BaseEntity } from '@/shared/entities';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { Account } from './account.entity';
 

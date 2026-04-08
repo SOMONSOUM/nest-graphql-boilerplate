@@ -1,4 +1,4 @@
-import databaseConfig from 'src/database/database.config';
+import databaseConfig from '@/database/database.config';
 import { DataSource } from 'typeorm';
 export const AppDataSource = new DataSource({
   ...databaseConfig,

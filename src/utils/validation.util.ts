@@ -1,6 +1,6 @@
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { validate, ValidationError, ValidatorOptions } from 'class-validator';
-import { ValidationErrorItem } from 'src/common/response';
+import { ValidationErrorItem } from '@/common/response';
 
 /**
  * Format class-validator errors into a flat list of field/message pairs.

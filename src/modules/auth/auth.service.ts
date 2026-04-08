@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
-import { oauth } from 'src/shared/oauth/client';
+import { OAuthClientService } from '@/shared/oauth/client.service';
 
 @Injectable()
 export class AuthService {
-  constructor() {}
+  constructor(private readonly clientService: OAuthClientService) {}
 
   async login() {
     try {
-      const { data, error } = await oauth.getLoginToken();
+      const { data, error } = await this.clientService.getLoginToken();
 
       if (!data || error) {
         throw new GraphQLError(error?.message ?? 'Invalid client credentials', {
@@ -27,7 +27,8 @@ export class AuthService {
   }
 
   async callBack(code: string) {
-    const { data, error } = await oauth.validateAuthorizationCode(code);
+    const { data, error } =
+      await this.clientService.validateAuthorizationCode(code);
     if (error) {
       throw new GraphQLError(error.message, {
         extensions: {
@@ -54,7 +55,7 @@ export class AuthService {
   }
 
   async refreshToken(refreshToken: string) {
-    const { data, error } = await oauth.refreshToken(refreshToken);
+    const { data, error } = await this.clientService.refreshToken(refreshToken);
     if (error) {
       throw new GraphQLError(error.message, {
         extensions: {
@@ -78,7 +79,7 @@ export class AuthService {
   }
 
   async getCurrentUser(accessToken: string) {
-    const { data, error } = await oauth.lookupUserProfile(accessToken);
+    const { data, error } = await this.clientService.getProfile(accessToken);
     if (error) {
       throw new GraphQLError(error.message, {
         extensions: {
@@ -104,7 +105,7 @@ export class AuthService {
   }
 
   async logout(refreshToken: string) {
-    const { error } = await oauth.logout(refreshToken);
+    const { error } = await this.clientService.logout(refreshToken);
     if (error) {
       throw new GraphQLError(error.message, {
         extensions: {

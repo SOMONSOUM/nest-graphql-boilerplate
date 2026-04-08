@@ -1,10 +1,10 @@
+import { ValidationErrorItem } from '@/common/response';
 import {
   BadRequestException,
   ConflictException,
   HttpException,
   NotFoundException,
 } from '@nestjs/common';
-import { ValidationErrorItem } from 'src/common/response';
 
 export interface GraphqlResponse<T> {
   statusCode: number;

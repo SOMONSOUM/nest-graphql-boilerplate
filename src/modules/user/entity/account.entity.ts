@@ -1,5 +1,5 @@
 import { Field, registerEnumType } from '@nestjs/graphql';
-import { BaseEntity } from 'src/shared/entities';
+import { BaseEntity } from '@/shared/entities';
 import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
 import { User } from './user.entity';
 
