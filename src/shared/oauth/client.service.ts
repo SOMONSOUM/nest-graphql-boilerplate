@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { GraphQLError } from 'graphql/error';
 import {
   type ApiResponse,
   type LoginTokenResponse,
@@ -35,6 +36,15 @@ export class OAuthClientService {
   async getProfile(
     accessToken: string,
   ): Promise<ApiResponse<LookupUserProfileResponse>> {
-    return await oauth.lookupUserProfile(accessToken);
+    try {
+      return await oauth.lookupUserProfile(accessToken);
+    } catch (error) {
+      if (error instanceof GraphQLError) throw error;
+      throw new GraphQLError('Failed to lookup user profile', {
+        extensions: {
+          code: 'UNAUTHORIZED',
+        },
+      });
+    }
   }
 }

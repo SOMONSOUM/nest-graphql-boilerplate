@@ -2,18 +2,29 @@ import { Module } from '@nestjs/common';
 import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
 import { OAuthClientService } from '@/shared/oauth/client.service';
-import { AccountRepository, UserRepository } from '../user/repository';
+import {
+  AccountRepository,
+  RefreshTokenRepository,
+  UserRepository,
+} from '../user/repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Account, User } from '../user/entity';
+import { Account, RefreshToken, User } from '../user/entity';
+import { HashService } from '@/common/hash/hash.service';
+import { TokenService } from '@/common/token/token.service';
+import { RefreshTokenService } from '../user/service/refresh-token.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Account])],
+  imports: [TypeOrmModule.forFeature([User, Account, RefreshToken])],
   providers: [
     AuthResolver,
     AuthService,
     OAuthClientService,
     UserRepository,
     AccountRepository,
+    RefreshTokenRepository,
+    RefreshTokenService,
+    HashService,
+    TokenService,
   ],
   exports: [AuthService],
 })

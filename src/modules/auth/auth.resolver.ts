@@ -1,10 +1,10 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import {
   CallBackResponse,
-  GetUserProfile,
-  GetUserProfileResponse,
-  LoginResponse,
+  UserProfile,
+  UserProfileResponse,
+  GetLoginTokenResponse,
   LogoutResponse,
   RefreshTokenResponse,
 } from './dto/response';
@@ -12,19 +12,31 @@ import { buildResponse } from '@/utils/response.util';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from './guard/gql-auth.guard';
 import { CurrentUser } from './decorator';
-import { CallBackInput, RefreshTokenInput } from './dto/input';
+import { CallBackInput, LoginInput, RefreshTokenInput } from './dto/input';
+import { LoginResponse } from './dto/response/login.response';
 
 @Resolver()
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Query(() => LoginResponse, { name: 'login' })
-  async login() {
-    const data = await this.authService.login();
+  @Mutation(() => LoginResponse, { name: 'login' })
+  async login(@Args('input') input: LoginInput) {
+    const data = await this.authService.login(input);
     return buildResponse({
       statusCode: 200,
       success: true,
       message: 'Login successful',
+      data,
+    });
+  }
+
+  @Query(() => GetLoginTokenResponse, { name: 'getLoginToken' })
+  async getLoginToken() {
+    const data = await this.authService.getLoginToken();
+    return buildResponse({
+      statusCode: 200,
+      success: true,
+      message: 'Get login token successful',
       data,
     });
   }
@@ -52,15 +64,15 @@ export class AuthResolver {
   }
 
   @UseGuards(GqlAuthGuard)
-  @Query(() => GetUserProfileResponse, { name: 'getProfile' })
+  @Query(() => UserProfileResponse, { name: 'getProfile' })
   async getProfile(
-    @CurrentUser() user: GetUserProfile,
-  ): Promise<GetUserProfileResponse> {
+    @CurrentUser() user: UserProfile,
+  ): Promise<UserProfileResponse> {
     return buildResponse({
-      statusCode: 200,
       success: true,
+      statusCode: 200,
       message: 'User profile fetched successfully',
-      data: user,
+      data: await this.authService.findUserByEmail(user.email),
     });
   }
 

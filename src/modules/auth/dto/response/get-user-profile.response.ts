@@ -2,22 +2,19 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { BaseResponse } from '@/common/response';
 
 @ObjectType()
-export class GetUserProfile {
+export class UserProfile {
   @Field(() => Int, { nullable: false })
-  userId: number;
+  id: number;
 
   @Field(() => String, { nullable: false })
   email: string;
 
   @Field(() => String, { nullable: true })
   username?: string;
-
-  @Field(() => Boolean, { nullable: false })
-  isActive: boolean;
 }
 
 @ObjectType()
-export class GetUserProfileResponse extends BaseResponse {
-  @Field(() => GetUserProfile, { nullable: true })
-  data?: GetUserProfile | null;
+export class UserProfileResponse extends BaseResponse {
+  @Field(() => UserProfile, { nullable: true })
+  data?: UserProfile | null;
 }

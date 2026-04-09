@@ -3,14 +3,16 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql/error';
 import { AuthService } from '../auth.service';
 import { Request } from 'express';
-import { GetUserProfile } from '../dto/response';
 import { IS_PUBLIC_KEY } from '../decorator/public.decorator';
 import { Reflector } from '@nestjs/core';
+import { TokenService } from '@/common/token/token.service';
+import { UserRepository } from '@/modules/user/repository';
+import { UserProfile } from '../dto/response';
 
 declare global {
   namespace Express {
     interface Request {
-      user?: GetUserProfile;
+      user: UserProfile | null;
     }
   }
 }
@@ -19,7 +21,8 @@ declare global {
 export class GqlAuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private readonly authService: AuthService,
+    private readonly tokenService: TokenService,
+    private readonly userRepository: UserRepository,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -52,22 +55,37 @@ export class GqlAuthGuard implements CanActivate {
 
     if (type !== 'Bearer' || !token) {
       throw new GraphQLError('Invalid authorization header format', {
-        extensions: { code: 'UNAUTHORIZED' },
+        extensions: {
+          code: 'UNAUTHORIZED',
+        },
       });
     }
 
     try {
-      const user = await this.authService.getCurrentUser(token);
-      req.user = user;
+      const payload = await this.tokenService.verifyAccessToken(token);
+      const user = await this.userRepository.findOne({
+        where: {
+          id: payload?.sub,
+        },
+      });
 
+      if (!user) {
+        throw new GraphQLError('User not found', {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      req.user = user;
       return true;
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof GraphQLError) {
         throw error;
       }
-      throw new GraphQLError('Unauthorized access', {
+      throw new GraphQLError('Unauthorized Access', {
         extensions: {
-          code: error?.extensions?.code || 'UNAUTHORIZED',
+          code: 'UNAUTHORIZED',
         },
       });
     }

@@ -15,31 +15,30 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type GetUserProfile {
-  userId: Int!
+type UserProfile {
+  id: Int!
   email: String!
   username: String
-  isActive: Boolean!
 }
 
-type GetUserProfileResponse {
+type UserProfileResponse {
   statusCode: Int!
   success: Boolean!
   message: String
   timestamp: String!
-  data: GetUserProfile
+  data: UserProfile
 }
 
-type Login {
+type GetLoginToken {
   redirectUri: String!
 }
 
-type LoginResponse {
+type GetLoginTokenResponse {
   statusCode: Int!
   success: Boolean!
   message: String
   timestamp: String!
-  data: Login
+  data: GetLoginToken
 }
 
 type CallBack {
@@ -80,6 +79,19 @@ type LogoutResponse {
   data: Logout
 }
 
+type Login {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type LoginResponse {
+  statusCode: Int!
+  success: Boolean!
+  message: String
+  timestamp: String!
+  login: Login
+}
+
 type CreateUserResponse {
   statusCode: Int!
   success: Boolean!
@@ -90,10 +102,10 @@ type CreateUserResponse {
 
 type Query {
   getHello: String!
-  login: LoginResponse!
+  getLoginToken: GetLoginTokenResponse!
   callBack(input: CallBackInput!): CallBackResponse!
   refreshToken(input: RefreshTokenInput!): RefreshTokenResponse!
-  getProfile: GetUserProfileResponse!
+  getProfile: UserProfileResponse!
   logout(refreshToken: String!): LogoutResponse!
 }
 
@@ -106,7 +118,13 @@ input RefreshTokenInput {
 }
 
 type Mutation {
+  login(input: LoginInput!): LoginResponse!
   registerUser(input: CreateUserInput!): CreateUserResponse!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
 }
 
 input CreateUserInput {

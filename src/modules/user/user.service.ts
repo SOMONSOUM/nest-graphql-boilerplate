@@ -3,12 +3,14 @@ import { AccountRepository, UserRepository } from './repository';
 import { CreateUserInput } from './dto/input';
 import { GraphQLError } from 'graphql/error';
 import { AuthProvider } from './entity';
+import { HashService } from '@/common/hash/hash.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly accountRepository: AccountRepository,
     private readonly userRepository: UserRepository,
+    private readonly hashService: HashService,
   ) {}
 
   async registerUser(dto: CreateUserInput) {
@@ -25,6 +27,8 @@ export class UserService {
         },
       });
     }
+
+    dto.password = await this.hashService.hash(dto.password);
 
     const user = this.userRepository.create({
       email: dto.email,
