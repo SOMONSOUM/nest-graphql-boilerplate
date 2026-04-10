@@ -168,7 +168,7 @@ export class AuthService {
       const savedUser = await this.userRepository.save(user);
       const { accessToken, refreshToken } =
         await this.tokenService.generateTokenPair(savedUser.id);
-
+      await this.refreshTokenService.createRefreshToken(refreshToken, user.id);
       return {
         accessToken,
         refreshToken,
