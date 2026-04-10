@@ -89,7 +89,7 @@ type LoginResponse {
   success: Boolean!
   message: String
   timestamp: String!
-  login: Login
+  data: Login
 }
 
 type CreateUserResponse {

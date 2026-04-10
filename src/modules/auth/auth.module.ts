@@ -12,10 +12,12 @@ import { Account, RefreshToken, User } from '../user/entity';
 import { HashService } from '@/common/hash/hash.service';
 import { TokenService } from '@/common/token/token.service';
 import { RefreshTokenService } from '../user/service/refresh-token.service';
+import { JwtStrategy } from './strategy/jwt-strategy';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Account, RefreshToken])],
   providers: [
+    JwtStrategy,
     AuthResolver,
     AuthService,
     OAuthClientService,

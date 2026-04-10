@@ -12,6 +12,6 @@ export class Login {
 
 @ObjectType()
 export class LoginResponse extends BaseResponse {
-  @Field(() => Login, { nullable: true, name: 'login' })
+  @Field(() => Login, { nullable: true })
   data: Login | null;
 }
