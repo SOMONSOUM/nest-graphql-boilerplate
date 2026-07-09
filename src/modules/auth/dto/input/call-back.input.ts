@@ -7,4 +7,9 @@ export class CallBackInput {
   @IsString()
   @IsNotEmpty()
   code: string;
+
+  @Field(() => String, { name: 'codeVerifier', nullable: false })
+  @IsString()
+  @IsNotEmpty()
+  codeVerifier: string;
 }

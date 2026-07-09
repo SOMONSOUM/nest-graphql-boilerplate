@@ -1,9 +1,15 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import {
+  CanActivate,
+  ExecutionContext,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorator';
 import { UserProfile } from '../dto/response';
+import { OAuthClientService } from '@/shared/oauth/client.service';
+import { GraphQLError } from 'graphql/error';
 
 declare global {
   namespace Express {
@@ -14,17 +20,18 @@ declare global {
 }
 
 @Injectable()
-export class GqlAuthGuard extends AuthGuard('jwt') {
-  constructor(private reflector: Reflector) {
-    super();
-  }
+export class GqlAuthGuard implements CanActivate {
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly clientService: OAuthClientService,
+  ) {}
 
-  getRequest(context: ExecutionContext) {
+  private getRequest(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context);
     return ctx.getContext().req;
   }
 
-  canActivate(context: ExecutionContext) {
+  async canActivate(context: ExecutionContext) {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -34,6 +41,33 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
       return true;
     }
 
-    return super.canActivate(context);
+    const req = this.getRequest(context);
+    const authorization = req.headers?.authorization;
+    const accessToken =
+      typeof authorization === 'string' &&
+      authorization.toLowerCase().startsWith('bearer ')
+        ? authorization.slice(7).trim()
+        : null;
+
+    if (!accessToken) {
+      throw new GraphQLError('Missing bearer token', {
+        extensions: {
+          code: HttpStatus.UNAUTHORIZED,
+        },
+      });
+    }
+
+    const { data, error } = await this.clientService.getProfile(accessToken);
+
+    if (error || !data?.isActive) {
+      throw new GraphQLError(error?.message ?? 'Unauthorized access', {
+        extensions: {
+          code: error?.code ?? HttpStatus.UNAUTHORIZED,
+        },
+      });
+    }
+
+    req.user = data;
+    return true;
   }
 }

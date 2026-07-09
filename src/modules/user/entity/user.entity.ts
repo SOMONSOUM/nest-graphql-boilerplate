@@ -2,7 +2,6 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { BaseEntity } from '@/shared/entities';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { Account } from './account.entity';
-import { RefreshToken } from './refresh-token.entity';
 
 @ObjectType()
 @Entity({
@@ -22,8 +21,4 @@ export class User extends BaseEntity {
   })
   accounts: Account[];
 
-  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user, {
-    cascade: true,
-  })
-  refreshTokens: RefreshToken[];
 }

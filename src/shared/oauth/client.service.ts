@@ -6,6 +6,8 @@ import {
   type ValidateAuthorizationCodeResponse,
   type RefreshTokenResponse,
   type LookupUserProfileResponse,
+  type GetLoginTokenInput,
+  type ValidateAuthorizationCodeInput,
   MOCOAuthClient,
 } from 'moc-oauth-client';
 
@@ -13,14 +15,16 @@ export const oauth = new MOCOAuthClient();
 
 @Injectable()
 export class OAuthClientService {
-  async getLoginToken(): Promise<ApiResponse<LoginTokenResponse>> {
-    return await oauth.getLoginToken();
+  async getLoginToken(
+    input: GetLoginTokenInput,
+  ): Promise<ApiResponse<LoginTokenResponse>> {
+    return await oauth.getLoginToken(input);
   }
 
   async validateAuthorizationCode(
-    code: string,
+    input: ValidateAuthorizationCodeInput,
   ): Promise<ApiResponse<ValidateAuthorizationCodeResponse>> {
-    return await oauth.validateAuthorizationCode(code);
+    return await oauth.validateAuthorizationCode(input);
   }
 
   async logout(refreshToken: string): Promise<ApiResponse<boolean>> {

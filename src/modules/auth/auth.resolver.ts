@@ -12,7 +12,12 @@ import { buildResponse } from '@/utils/response.util';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from './guard/gql-auth.guard';
 import { CurrentUser } from './decorator';
-import { CallBackInput, LoginInput, RefreshTokenInput } from './dto/input';
+import {
+  CallBackInput,
+  GetLoginTokenInput,
+  LoginInput,
+  RefreshTokenInput,
+} from './dto/input';
 import { LoginResponse } from './dto/response/login.response';
 
 @Resolver()
@@ -31,8 +36,8 @@ export class AuthResolver {
   }
 
   @Query(() => GetLoginTokenResponse, { name: 'getLoginToken' })
-  async getLoginToken() {
-    const data = await this.authService.getLoginToken();
+  async getLoginToken(@Args('input') input: GetLoginTokenInput) {
+    const data = await this.authService.getLoginToken(input);
     return buildResponse({
       statusCode: 200,
       success: true,
@@ -43,7 +48,10 @@ export class AuthResolver {
 
   @Query(() => CallBackResponse, { name: 'callBack' })
   async callBack(@Args('input') input: CallBackInput) {
-    const data = await this.authService.callBack(input.code);
+    const data = await this.authService.callBack(
+      input.code,
+      input.codeVerifier,
+    );
     return buildResponse({
       statusCode: 200,
       success: true,
@@ -72,7 +80,7 @@ export class AuthResolver {
       success: true,
       statusCode: 200,
       message: 'User profile fetched successfully',
-      data: await this.authService.findUserByEmail(user.email),
+      data: user,
     });
   }
 
