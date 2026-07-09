@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthResolver } from './auth.resolver';
 import { AuthService } from './auth.service';
 import { OAuthClientService } from '@/shared/oauth/client.service';
-import { UserRepository } from '../user/repository';
+import { AccountRepository, UserRepository } from '../user/repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Account, User } from '../user/entity';
 
@@ -13,6 +13,7 @@ import { Account, User } from '../user/entity';
     AuthService,
     OAuthClientService,
     UserRepository,
+    AccountRepository,
   ],
   exports: [AuthService],
 })

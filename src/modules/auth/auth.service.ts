@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
 import { OAuthClientService } from '@/shared/oauth/client.service';
-import { UserRepository } from '../user/repository';
+import { AccountRepository, UserRepository } from '../user/repository';
 import { AuthProvider } from '../user/entity';
 import { GetLoginTokenInput, LoginInput } from './dto/input';
 
@@ -10,6 +10,7 @@ export class AuthService {
   constructor(
     private readonly clientService: OAuthClientService,
     private readonly userRepository: UserRepository,
+    private readonly accountRepository: AccountRepository,
   ) {}
 
   async findUserByEmail(email: string) {
@@ -86,35 +87,45 @@ export class AuthService {
       refreshToken: data.payload.refreshToken,
     };
 
+    const mocAccount = {
+      authProvider: AuthProvider.MOC_DIGIKEY,
+      providerId: data.payload.id,
+    };
+
     const user = await this.userRepository.findOne({
       where: {
-        email: data.payload.email,
-        accounts: {
-          authProvider: AuthProvider.MOC_DIGIKEY,
-          providerId: data.payload.id,
-        },
+        accounts: mocAccount,
       },
     });
 
-    if (!user) {
-      const user = this.userRepository.create({
-        email: data.payload.email,
-        username: data.payload.username,
-        accounts: [
-          {
-            authProvider: AuthProvider.MOC_DIGIKEY,
-            providerId: data.payload.id,
-          },
-        ],
-      });
-
-      await this.userRepository.save(user);
-
-      return {
-        ...providerTokens,
-      };
+    if (user) {
+      return providerTokens;
     }
 
+    const existingUser = await this.userRepository.findOne({
+      where: {
+        email: data.payload.email,
+      },
+    });
+
+    if (existingUser) {
+      await this.accountRepository.save(
+        this.accountRepository.create({
+          ...mocAccount,
+          user: existingUser,
+        }),
+      );
+
+      return providerTokens;
+    }
+
+    const createdUser = this.userRepository.create({
+      email: data.payload.email,
+      username: data.payload.username,
+      accounts: [mocAccount],
+    });
+
+    await this.userRepository.save(createdUser);
     return providerTokens;
   }
 
