@@ -24,17 +24,6 @@ import { LoginResponse } from './dto/response/login.response';
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
-  @Mutation(() => LoginResponse, { name: 'login' })
-  async login(@Args('input') input: LoginInput) {
-    const data = await this.authService.login(input);
-    return buildResponse({
-      statusCode: 200,
-      success: true,
-      message: 'Login successful',
-      data,
-    });
-  }
-
   @Query(() => GetLoginTokenResponse, { name: 'getLoginToken' })
   async getLoginToken(@Args('input') input: GetLoginTokenInput) {
     const data = await this.authService.getLoginToken(input);

@@ -79,19 +79,6 @@ type LogoutResponse {
   data: Logout
 }
 
-type Login {
-  accessToken: String!
-  refreshToken: String!
-}
-
-type LoginResponse {
-  statusCode: Int!
-  success: Boolean!
-  message: String
-  timestamp: String!
-  data: Login
-}
-
 type CreateUserResponse {
   statusCode: Int!
   success: Boolean!
@@ -125,13 +112,7 @@ input RefreshTokenInput {
 }
 
 type Mutation {
-  login(input: LoginInput!): LoginResponse!
   registerUser(input: CreateUserInput!): CreateUserResponse!
-}
-
-input LoginInput {
-  email: String!
-  password: String!
 }
 
 input CreateUserInput {

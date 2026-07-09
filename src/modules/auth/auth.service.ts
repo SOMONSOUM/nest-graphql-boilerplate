@@ -30,14 +30,6 @@ export class AuthService {
     return user;
   }
 
-  login(_dto: LoginInput) {
-    throw new GraphQLError('Direct login is disabled. Use MOC OAuth login.', {
-      extensions: {
-        code: HttpStatus.FORBIDDEN,
-      },
-    });
-  }
-
   async getLoginToken(input: GetLoginTokenInput) {
     try {
       const { data, error } = await this.clientService.getLoginToken(input);
