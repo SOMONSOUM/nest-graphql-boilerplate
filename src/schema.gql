@@ -102,15 +102,22 @@ type CreateUserResponse {
 
 type Query {
   getHello: String!
-  getLoginToken: GetLoginTokenResponse!
+  getLoginToken(input: GetLoginTokenInput!): GetLoginTokenResponse!
   callBack(input: CallBackInput!): CallBackResponse!
   refreshToken(input: RefreshTokenInput!): RefreshTokenResponse!
   getProfile: UserProfileResponse!
   logout(refreshToken: String!): LogoutResponse!
 }
 
+input GetLoginTokenInput {
+  state: String!
+  codeChallenge: String!
+  codeChallengeMethod: String = "S256"
+}
+
 input CallBackInput {
   code: String!
+  codeVerifier: String!
 }
 
 input RefreshTokenInput {
