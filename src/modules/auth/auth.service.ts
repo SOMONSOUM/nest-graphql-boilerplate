@@ -5,20 +5,6 @@ import { AccountRepository, UserRepository } from '../user/repository';
 import { AuthProvider } from '../user/entity';
 import { GetLoginTokenInput } from './dto/input';
 
-type IdentityProfilePayload = {
-  id: string;
-  username?: string;
-  email?: string;
-  fullNameKm?: string;
-  fullNameEn?: string;
-  dob?: string;
-  profileUrl?: string;
-  gender?: string;
-  phoneNumber: string;
-  isActive: boolean;
-  nationalId?: string;
-};
-
 @Injectable()
 export class AuthService {
   constructor(
