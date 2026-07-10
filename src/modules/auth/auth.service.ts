@@ -31,23 +31,20 @@ export class AuthService {
   }
 
   async getLoginToken(input: GetLoginTokenInput) {
-    try {
-      const { data, error } = await this.clientService.getLoginToken(input);
+    const response = await this.clientService.getLoginToken(input);
 
-      if (!data || error) {
-        throw new GraphQLError(error?.message ?? 'Invalid client credentials', {
+    if (!response.success || !response.data?.redirectUri) {
+      throw new GraphQLError(
+        response.error?.message ?? 'Invalid client credentials',
+        {
           extensions: {
-            code: error?.code ?? 'INVALID_CLIENT_CREDENTIALS',
+            code: response.error?.code ?? 'INVALID_CLIENT_CREDENTIALS',
           },
-        });
-      }
-
-      return {
-        ...data,
-      };
-    } catch (error) {
-      console.log({ error });
+        },
+      );
     }
+
+    return response.data;
   }
 
   async callBack(code: string, codeVerifier: string) {
@@ -80,11 +77,11 @@ export class AuthService {
     };
 
     const payload = data.payload;
+    const identityEmail = payload.username ?? payload.email;
 
     const userProfile = {
-      email: payload.username,
+      email: identityEmail,
       nationalId: payload.nationalId,
-      providerId: payload.id,
       fullNameKm: payload.fullNameKm,
       fullNameEn: payload.fullNameEn,
       dob: payload.dob,
@@ -119,8 +116,8 @@ export class AuthService {
       return providerTokens;
     }
 
-    if (!data.payload.email) {
-      throw new GraphQLError('Identity provider did not return an email', {
+    if (!identityEmail) {
+      throw new GraphQLError('Identity provider did not return a username', {
         extensions: {
           code: HttpStatus.BAD_REQUEST,
         },
@@ -128,16 +125,11 @@ export class AuthService {
     }
 
     const existingUser =
-      (await this.userRepository.findOne({
+      await this.userRepository.findOne({
         where: {
-          providerId: payload.id,
+          email: identityEmail,
         },
-      })) ??
-      (await this.userRepository.findOne({
-        where: {
-          email: data.payload.email,
-        },
-      }));
+      });
 
     if (existingUser) {
       const updatedUser = await this.userRepository.save({
@@ -157,7 +149,7 @@ export class AuthService {
 
     const createdUser = this.userRepository.create({
       ...profileUpdates,
-      email: data.payload.email,
+      email: identityEmail,
       accounts: [mocAccount],
     });
 

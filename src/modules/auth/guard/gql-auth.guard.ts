@@ -10,6 +10,8 @@ import { IS_PUBLIC_KEY } from '../decorator';
 import { UserProfile } from '../dto/response';
 import { OAuthClientService } from '@/shared/oauth/client.service';
 import { GraphQLError } from 'graphql/error';
+import { AccountRepository } from '@/modules/user/repository';
+import { AuthProvider } from '@/modules/user/entity';
 
 declare global {
   namespace Express {
@@ -24,6 +26,7 @@ export class GqlAuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly clientService: OAuthClientService,
+    private readonly accountRepository: AccountRepository,
   ) {}
 
   private getRequest(context: ExecutionContext) {
@@ -59,9 +62,7 @@ export class GqlAuthGuard implements CanActivate {
 
     const { data, error } = await this.clientService.getProfile(accessToken);
 
-    const profile = data as typeof data & { is_active?: boolean };
-
-    if (error || !(profile?.is_active ?? data?.isActive)) {
+    if (error || !data?.id || !data?.isActive) {
       throw new GraphQLError(error?.message ?? 'Unauthorized access', {
         extensions: {
           code: error?.code ?? HttpStatus.UNAUTHORIZED,
@@ -69,7 +70,36 @@ export class GqlAuthGuard implements CanActivate {
       });
     }
 
-    req.user = profile;
+    const account = await this.accountRepository.findOne({
+      where: {
+        authProvider: AuthProvider.MOC_DIGIKEY,
+        providerId: data.id,
+      },
+      relations: {
+        user: true,
+      },
+    });
+
+    if (!account?.user?.isActive) {
+      throw new GraphQLError('Unauthorized access', {
+        extensions: {
+          code: HttpStatus.UNAUTHORIZED,
+        },
+      });
+    }
+
+    req.user = {
+      id: account.user.id,
+      email: account.user.email,
+      isActive: account.user.isActive,
+      profileUrl: account.user.profileUrl,
+      gender: account.user.gender,
+      phoneNumber: account.user.phoneNumber,
+      nationalId: account.user.nationalId,
+      dob: account.user.dob,
+      fullNameKm: account.user.fullNameKm,
+      fullNameEn: account.user.fullNameEn,
+    };
     return true;
   }
 }

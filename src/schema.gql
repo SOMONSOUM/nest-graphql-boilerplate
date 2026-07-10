@@ -7,7 +7,14 @@ type User {
   createdAt: DateTime!
   updatedAt: DateTime!
   email: String!
-  username: String
+  isActive: Boolean!
+  profileUrl: String
+  gender: String
+  phoneNumber: String
+  nationalId: String
+  dob: String
+  fullNameKm: String
+  fullNameEn: String
 }
 
 """
@@ -18,7 +25,14 @@ scalar DateTime
 type UserProfile {
   id: Int!
   email: String!
-  username: String
+  isActive: Boolean!
+  profileUrl: String
+  gender: String
+  phoneNumber: String
+  nationalId: String
+  dob: String
+  fullNameKm: String
+  fullNameEn: String
 }
 
 type UserProfileResponse {
