@@ -9,6 +9,9 @@ export class UserProfile {
   @Field(() => String, { nullable: false })
   email: string;
 
+  @Field(() => String, { nullable: true })
+  username?: string;
+
   @Field(() => Boolean, { nullable: false })
   isActive: boolean;
 

@@ -91,6 +91,7 @@ export class GqlAuthGuard implements CanActivate {
     req.user = {
       id: account.user.id,
       email: account.user.email,
+      username: account.user.username,
       isActive: account.user.isActive,
       profileUrl: account.user.profileUrl,
       gender: account.user.gender,

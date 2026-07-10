@@ -81,6 +81,7 @@ export class AuthService {
 
     const userProfile = {
       email: identityEmail,
+      username: payload.username,
       nationalId: payload.nationalId,
       fullNameKm: payload.fullNameKm,
       fullNameEn: payload.fullNameEn,

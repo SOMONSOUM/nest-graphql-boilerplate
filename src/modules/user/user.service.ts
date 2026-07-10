@@ -32,6 +32,7 @@ export class UserService {
 
     const user = this.userRepository.create({
       email: dto.email,
+      username: dto.username,
       accounts: [
         {
           authProvider: AuthProvider.LOCAL,

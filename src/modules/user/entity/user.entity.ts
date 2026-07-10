@@ -12,6 +12,10 @@ export class User extends BaseEntity {
   @Column({ unique: true, nullable: false, name: 'email' })
   email: string;
 
+  @Field(() => String, { nullable: true, name: 'username' })
+  @Column({ unique: true, nullable: true, name: 'username' })
+  username?: string;
+
   @Field(() => Boolean, { nullable: false, name: 'isActive' })
   @Column({ nullable: false, name: 'is_active', default: true })
   isActive: boolean;
