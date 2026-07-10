@@ -14,7 +14,7 @@ const databaseConfig: DataSourceOptions = {
   migrations: ['dist/src/database/migrations/*.js'],
   migrationsRun: false,
   migrationsTableName: 'migrations',
-  synchronize: true,
+  synchronize: false,
 };
 
 export default databaseConfig;

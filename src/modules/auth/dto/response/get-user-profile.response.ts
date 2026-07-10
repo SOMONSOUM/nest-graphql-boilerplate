@@ -10,7 +10,31 @@ export class UserProfile {
   email: string;
 
   @Field(() => String, { nullable: true })
-  username?: string;
+  provider_id?: string;
+
+  @Field(() => Boolean, { nullable: false })
+  is_active: boolean;
+
+  @Field(() => String, { nullable: true })
+  profile_url?: string;
+
+  @Field(() => String, { nullable: true })
+  gender?: string;
+
+  @Field(() => String, { nullable: true })
+  phone_number?: string;
+
+  @Field(() => String, { nullable: true })
+  national_id?: string;
+
+  @Field(() => String, { nullable: true })
+  dob?: string;
+
+  @Field(() => String, { nullable: true })
+  full_name_km?: string;
+
+  @Field(() => String, { nullable: true })
+  full_name_en?: string;
 }
 
 @ObjectType()

@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { Field, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { BaseEntity } from '@/shared/entities';
 import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
 import { User } from './user.entity';
@@ -26,9 +26,9 @@ export class Account extends BaseEntity {
   @Column({ default: AuthProvider.MOC_DIGIKEY, name: 'auth_provider' })
   authProvider: AuthProvider;
 
-  @Field(() => Int, { nullable: true, name: 'providerId' })
-  @Column({ nullable: true, name: 'provider_id', type: 'int' })
-  providerId?: number;
+  @Field(() => String, { nullable: true, name: 'providerId' })
+  @Column({ nullable: true, name: 'provider_id', type: 'char', length: 36 })
+  providerId?: string;
 
   @Column({ nullable: true, name: 'password' })
   password?: string;

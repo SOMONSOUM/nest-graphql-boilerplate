@@ -3,7 +3,21 @@ import { GraphQLError } from 'graphql';
 import { OAuthClientService } from '@/shared/oauth/client.service';
 import { AccountRepository, UserRepository } from '../user/repository';
 import { AuthProvider } from '../user/entity';
-import { GetLoginTokenInput, LoginInput } from './dto/input';
+import { GetLoginTokenInput } from './dto/input';
+
+type IdentityProfilePayload = {
+  id: string;
+  username?: string;
+  email?: string;
+  fullNameKm?: string;
+  fullNameEn?: string;
+  dob?: string;
+  profileUrl?: string;
+  gender?: string;
+  phoneNumber: string;
+  isActive: boolean;
+  nationalId?: string;
+};
 
 @Injectable()
 export class AuthService {
@@ -79,32 +93,76 @@ export class AuthService {
       refreshToken: data.payload.refreshToken,
     };
 
+    const payload = data.payload;
+
+    const userProfile = {
+      email: payload.username,
+      nationalId: payload.nationalId,
+      providerId: payload.id,
+      fullNameKm: payload.fullNameKm,
+      fullNameEn: payload.fullNameEn,
+      dob: payload.dob,
+      profileUrl: payload.profileUrl,
+      gender: payload.gender,
+      phoneNumber: payload.phoneNumber,
+      isActive: payload.isActive,
+    };
+    const profileUpdates = Object.fromEntries(
+      Object.entries(userProfile).filter(([, value]) => value !== undefined),
+    );
     const mocAccount = {
       authProvider: AuthProvider.MOC_DIGIKEY,
-      providerId: data.payload.id,
+      providerId: payload.id,
     };
 
-    const user = await this.userRepository.findOne({
+    const account = await this.accountRepository.findOne({
       where: {
-        accounts: mocAccount,
+        authProvider: mocAccount.authProvider,
+        providerId: mocAccount.providerId,
+      },
+      relations: {
+        user: true,
       },
     });
 
-    if (user) {
+    if (account?.user) {
+      await this.userRepository.save({
+        ...account.user,
+        ...profileUpdates,
+      });
       return providerTokens;
     }
 
-    const existingUser = await this.userRepository.findOne({
-      where: {
-        email: data.payload.email,
-      },
-    });
+    if (!data.payload.email) {
+      throw new GraphQLError('Identity provider did not return an email', {
+        extensions: {
+          code: HttpStatus.BAD_REQUEST,
+        },
+      });
+    }
+
+    const existingUser =
+      (await this.userRepository.findOne({
+        where: {
+          providerId: payload.id,
+        },
+      })) ??
+      (await this.userRepository.findOne({
+        where: {
+          email: data.payload.email,
+        },
+      }));
 
     if (existingUser) {
+      const updatedUser = await this.userRepository.save({
+        ...existingUser,
+        ...profileUpdates,
+      });
+
       await this.accountRepository.save(
         this.accountRepository.create({
           ...mocAccount,
-          user: existingUser,
+          user: updatedUser,
         }),
       );
 
@@ -112,8 +170,8 @@ export class AuthService {
     }
 
     const createdUser = this.userRepository.create({
+      ...profileUpdates,
       email: data.payload.email,
-      username: data.payload.username,
       accounts: [mocAccount],
     });
 

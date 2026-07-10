@@ -59,7 +59,9 @@ export class GqlAuthGuard implements CanActivate {
 
     const { data, error } = await this.clientService.getProfile(accessToken);
 
-    if (error || !data?.isActive) {
+    const profile = data as typeof data & { is_active?: boolean };
+
+    if (error || !(profile?.is_active ?? data?.isActive)) {
       throw new GraphQLError(error?.message ?? 'Unauthorized access', {
         extensions: {
           code: error?.code ?? HttpStatus.UNAUTHORIZED,
@@ -67,7 +69,7 @@ export class GqlAuthGuard implements CanActivate {
       });
     }
 
-    req.user = data;
+    req.user = profile;
     return true;
   }
 }
