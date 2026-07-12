@@ -100,6 +100,7 @@ export class GqlAuthGuard implements CanActivate {
       dob: account.user.dob,
       fullNameKm: account.user.fullNameKm,
       fullNameEn: account.user.fullNameEn,
+      position: account.user.position,
     };
     return true;
   }

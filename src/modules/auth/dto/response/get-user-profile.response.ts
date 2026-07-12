@@ -35,6 +35,9 @@ export class UserProfile {
 
   @Field(() => String, { nullable: true })
   fullNameEn?: string;
+
+  @Field(() => String, { nullable: true })
+  position?: string;
 }
 
 @ObjectType()

@@ -48,6 +48,10 @@ export class User extends BaseEntity {
   @Column({ nullable: true, name: 'full_name_en' })
   fullNameEn?: string;
 
+  @Field(() => String, { nullable: true, name: 'position' })
+  @Column({ nullable: true, name: 'position' })
+  position?: string;
+
   @OneToMany(() => Account, (account) => account.user, {
     cascade: true,
   })

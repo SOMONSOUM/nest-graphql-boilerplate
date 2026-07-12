@@ -31,6 +31,8 @@
 $ npm install
 ```
 
+Use Node.js `20.11.1` or newer for this project.
+
 ## Compile and run the project
 
 ```bash
@@ -42,6 +44,50 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+```
+
+## Database and TypeORM
+
+TypeORM uses [ormconfig.ts](./ormconfig.ts) as the data source config. Make sure your database environment variables are set before generating, running, or reverting migrations.
+
+### Create an empty migration
+
+Use this when you want to write the SQL manually.
+
+```bash
+$ npm run migration:create --name=CreateUsers
+```
+
+This creates a migration file in `src/database/migrations`.
+
+### Generate a migration from entity changes
+
+Use this after changing entity files and you want TypeORM to compare entities with the current database schema.
+
+```bash
+$ npm run migration:generate --name=CreateUsers
+```
+
+### Run pending migrations
+
+```bash
+$ npm run migration:run
+```
+
+### Revert the last migration
+
+```bash
+$ npm run migration:revert
+```
+
+### Run any TypeORM command
+
+Use the base TypeORM script when you need another CLI command.
+
+```bash
+$ npm run typeorm -- migration:show
+$ npm run typeorm -- schema:log
+$ npm run typeorm -- --help
 ```
 
 ## Run tests

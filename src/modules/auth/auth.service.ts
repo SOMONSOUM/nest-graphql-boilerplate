@@ -76,7 +76,9 @@ export class AuthService {
       refreshToken: data.payload.refreshToken,
     };
 
-    const payload = data.payload;
+    const payload = data.payload as typeof data.payload & {
+      position?: string;
+    };
     const identityEmail = payload.username ?? payload.email;
 
     const userProfile = {
@@ -88,6 +90,7 @@ export class AuthService {
       dob: payload.dob,
       profileUrl: payload.profileUrl,
       gender: payload.gender,
+      position: payload.position,
       phoneNumber: payload.phoneNumber,
       isActive: payload.isActive,
     };
