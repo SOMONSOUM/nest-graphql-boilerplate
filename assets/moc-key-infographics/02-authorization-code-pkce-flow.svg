@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" role="img" aria-labelledby="title desc">
+  <title id="title">MOC Key Authorization Code with PKCE Flow</title>
+  <desc id="desc">Sequence diagram for integrating a client application with MOC Key using OAuth 2.0 Authorization Code with PKCE.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f8fafc}.lane{fill:#fff;stroke:#d8dee8;stroke-width:2}.head{fill:#24456f}.line{stroke:#cbd5e1;stroke-width:2}.arrow{stroke:#24456f;stroke-width:4;fill:none;marker-end:url(#arrow)}.return{stroke:#0f766e;stroke-width:4;fill:none;marker-end:url(#arrowTeal)}.text{fill:#162033;font-family:Inter,Arial,sans-serif}.title{font-size:52px;font-weight:800}.subtitle{font-size:23px}.h{font-size:22px;font-weight:800}.small{font-size:16px}.step{font-size:18px;font-weight:800}.muted{fill:#64748b}.white{fill:#fff}.note{fill:#fff7ed;stroke:#fed7aa;stroke-width:2}.ok{fill:#ecfdf5;stroke:#99f6e4;stroke-width:2}
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2 L10 6 L2 10 Z" fill="#24456f"/></marker>
+    <marker id="arrowTeal" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2 L10 6 L2 10 Z" fill="#0f766e"/></marker>
+  </defs>
+  <rect class="bg" width="1600" height="1100"/>
+  <text class="text title" x="80" y="90">Authorization Code + PKCE</text>
+  <text class="text subtitle muted" x="82" y="130">Recommended OAuth 2.0 login flow for MOC Key web and mobile integrations.</text>
+
+  <g transform="translate(80 190)">
+    <rect class="lane" x="0" y="0" width="330" height="780" rx="18"/>
+    <rect class="head" x="0" y="0" width="330" height="70" rx="18"/>
+    <text class="text h white" x="35" y="44">Browser / Client UI</text>
+    <line class="line" x1="165" y1="85" x2="165" y2="750"/>
+  </g>
+  <g transform="translate(465 190)">
+    <rect class="lane" x="0" y="0" width="330" height="780" rx="18"/>
+    <rect class="head" x="0" y="0" width="330" height="70" rx="18"/>
+    <text class="text h white" x="35" y="44">Client Backend</text>
+    <line class="line" x1="165" y1="85" x2="165" y2="750"/>
+  </g>
+  <g transform="translate(850 190)">
+    <rect class="lane" x="0" y="0" width="330" height="780" rx="18"/>
+    <rect class="head" x="0" y="0" width="330" height="70" rx="18"/>
+    <text class="text h white" x="35" y="44">MOC Key</text>
+    <line class="line" x1="165" y1="85" x2="165" y2="750"/>
+  </g>
+  <g transform="translate(1235 190)">
+    <rect class="lane" x="0" y="0" width="285" height="780" rx="18"/>
+    <rect class="head" x="0" y="0" width="285" height="70" rx="18"/>
+    <text class="text h white" x="35" y="44">Protected APIs</text>
+    <line class="line" x1="142" y1="85" x2="142" y2="750"/>
+  </g>
+
+  <path class="arrow" d="M245 310 H630"/>
+  <text class="text step" x="280" y="292">1. Start login</text>
+  <text class="text small muted" x="280" y="333">GET /auth/moc-key/start</text>
+
+  <path class="return" d="M630 390 H245"/>
+  <text class="text step" x="286" y="372">2. Redirect URL</text>
+  <text class="text small muted" x="286" y="414">state + nonce + code_challenge</text>
+
+  <path class="arrow" d="M245 480 H1015"/>
+  <text class="text step" x="333" y="462">3. Authorize request</text>
+  <text class="text small muted" x="333" y="504">/oauth/authorize?response_type=code&amp;scope=openid profile identity.read</text>
+
+  <path class="return" d="M1015 570 H245"/>
+  <text class="text step" x="354" y="552">4. Redirect callback</text>
+  <text class="text small muted" x="354" y="594">redirect_uri?code=...&amp;state=...</text>
+
+  <path class="arrow" d="M245 660 H630"/>
+  <text class="text step" x="285" y="642">5. Send code to backend</text>
+  <text class="text small muted" x="285" y="684">Backend validates stored state</text>
+
+  <path class="arrow" d="M630 750 H1015"/>
+  <text class="text step" x="676" y="732">6. Exchange code</text>
+  <text class="text small muted" x="676" y="774">POST /oauth/token with code_verifier</text>
+
+  <path class="return" d="M1015 835 H630"/>
+  <text class="text step" x="690" y="817">7. Tokens returned</text>
+  <text class="text small muted" x="690" y="859">access_token + refresh_token + id_token</text>
+
+  <path class="arrow" d="M630 915 H1377"/>
+  <text class="text step" x="735" y="897">8. Call API</text>
+  <text class="text small muted" x="735" y="939">Authorization: Bearer access_token</text>
+
+  <rect class="note" x="80" y="1000" width="690" height="68" rx="14"/>
+  <text class="text step" x="110" y="1031">Security rule</text>
+  <text class="text small muted" x="110" y="1056">Keep client secret, refresh token, and code_verifier in backend-controlled storage.</text>
+
+  <rect class="ok" x="830" y="1000" width="690" height="68" rx="14"/>
+  <text class="text step" x="860" y="1031">Validation rule</text>
+  <text class="text small muted" x="860" y="1056">Check issuer, audience, expiry, signature, nonce, subject, and required scopes.</text>
+</svg>

@@ -99,7 +99,7 @@ export class AuthService {
     );
     const mocAccount = {
       authProvider: AuthProvider.MOC_DIGIKEY,
-      providerId: payload.id,
+      providerId: payload.identityId,
     };
 
     const account = await this.accountRepository.findOne({
@@ -128,12 +128,11 @@ export class AuthService {
       });
     }
 
-    const existingUser =
-      await this.userRepository.findOne({
-        where: {
-          email: identityEmail,
-        },
-      });
+    const existingUser = await this.userRepository.findOne({
+      where: {
+        email: identityEmail,
+      },
+    });
 
     if (existingUser) {
       const updatedUser = await this.userRepository.save({

@@ -62,7 +62,7 @@ export class GqlAuthGuard implements CanActivate {
 
     const { data, error } = await this.clientService.getProfile(accessToken);
 
-    if (error || !data?.id || !data?.isActive) {
+    if (error || !data?.identityId || !data?.isActive) {
       throw new GraphQLError(error?.message ?? 'Unauthorized access', {
         extensions: {
           code: error?.code ?? HttpStatus.UNAUTHORIZED,
@@ -73,7 +73,7 @@ export class GqlAuthGuard implements CanActivate {
     const account = await this.accountRepository.findOne({
       where: {
         authProvider: AuthProvider.MOC_DIGIKEY,
-        providerId: data.id,
+        providerId: data.identityId,
       },
       relations: {
         user: true,

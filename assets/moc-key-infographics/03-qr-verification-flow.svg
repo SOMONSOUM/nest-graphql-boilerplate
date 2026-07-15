@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">MOC Key QR Verification Flow</title>
+  <desc id="desc">Infographic showing how client applications create MOC Key QR verification sessions and how scanner apps verify them.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f8fafc}.card{fill:#fff;stroke:#d8dee8;stroke-width:2}.dark{fill:#24456f}.teal{fill:#0f766e}.amber{fill:#b45309}.muted{fill:#64748b}.text{fill:#162033;font-family:Inter,Arial,sans-serif}.title{font-size:52px;font-weight:800}.subtitle{font-size:23px}.h{font-size:27px;font-weight:800}.label{font-size:18px;font-weight:800}.small{font-size:16px}.tiny{font-size:14px}.arrow{stroke:#24456f;stroke-width:4;fill:none;marker-end:url(#arrow)}.return{stroke:#0f766e;stroke-width:4;fill:none;marker-end:url(#arrowTeal)}.qr{fill:#162033}.light{fill:#e2e8f0}.warn{fill:#fff7ed;stroke:#fed7aa;stroke-width:2}.ok{fill:#ecfdf5;stroke:#99f6e4;stroke-width:2}
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2 L10 6 L2 10 Z" fill="#24456f"/></marker>
+    <marker id="arrowTeal" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M2 2 L10 6 L2 10 Z" fill="#0f766e"/></marker>
+  </defs>
+  <rect class="bg" width="1600" height="1000"/>
+  <text class="text title" x="80" y="88">MOC Key QR Verification Flow</text>
+  <text class="text subtitle muted" x="82" y="128">Short-lived signed QR sessions for UAT scanning with mocdigikey and production scanning with moc-app.</text>
+
+  <rect class="card" x="80" y="210" width="310" height="240" rx="18"/>
+  <text class="text tiny dark" x="115" y="252">STEP 1</text>
+  <text class="text h" x="115" y="292">Create session</text>
+  <text class="text small muted" x="115" y="332">Client backend requests a</text>
+  <text class="text small muted" x="115" y="360">verification session from MOC Key.</text>
+  <text class="text small muted" x="115" y="395">Includes purpose, callback URL,</text>
+  <text class="text small muted" x="115" y="423">scope, and subject hint.</text>
+
+  <rect class="card" x="480" y="210" width="310" height="240" rx="18"/>
+  <text class="text tiny dark" x="515" y="252">STEP 2</text>
+  <text class="text h" x="515" y="292">Render QR</text>
+  <g transform="translate(520 318)">
+    <rect x="0" y="0" width="92" height="92" fill="#fff" stroke="#cbd5e1"/>
+    <rect class="qr" x="9" y="9" width="22" height="22"/><rect class="qr" x="61" y="9" width="22" height="22"/><rect class="qr" x="9" y="61" width="22" height="22"/>
+    <rect class="qr" x="42" y="42" width="11" height="11"/><rect class="qr" x="61" y="42" width="11" height="11"/><rect class="qr" x="42" y="61" width="11" height="11"/><rect class="qr" x="74" y="74" width="9" height="9"/>
+  </g>
+  <text class="text small muted" x="630" y="348">Frontend displays only</text>
+  <text class="text small muted" x="630" y="376">the signed QR payload.</text>
+  <text class="text small muted" x="515" y="423">Never expose client secret in browser.</text>
+
+  <rect class="card" x="880" y="210" width="310" height="240" rx="18"/>
+  <text class="text tiny dark" x="915" y="252">STEP 3</text>
+  <text class="text h" x="915" y="292">Scan</text>
+  <text class="text small muted" x="915" y="332">UAT: mocdigikey web app</text>
+  <text class="text small muted" x="915" y="360">Production: official moc-app</text>
+  <text class="text small muted" x="915" y="395">Scanner submits session ID,</text>
+  <text class="text small muted" x="915" y="423">officer identity, and scan proof.</text>
+
+  <rect class="card" x="1280" y="210" width="240" height="240" rx="18"/>
+  <text class="text tiny dark" x="1315" y="252">STEP 4</text>
+  <text class="text h" x="1315" y="292">Finish</text>
+  <text class="text small muted" x="1315" y="332">MOC Key sends a</text>
+  <text class="text small muted" x="1315" y="360">signed callback or</text>
+  <text class="text small muted" x="1315" y="388">status result.</text>
+
+  <path class="arrow" d="M390 330 H480"/>
+  <path class="arrow" d="M790 330 H880"/>
+  <path class="arrow" d="M1190 330 H1280"/>
+
+  <rect class="card" x="170" y="580" width="1260" height="250" rx="22"/>
+  <text class="text h" x="210" y="632">What MOC Key validates during scan</text>
+  <g transform="translate(210 675)">
+    <rect class="ok" x="0" y="0" width="250" height="98" rx="14"/>
+    <text class="text label" x="25" y="38">Signature</text>
+    <text class="text small muted" x="25" y="68">QR payload is authentic</text>
+    <rect class="ok" x="285" y="0" width="250" height="98" rx="14"/>
+    <text class="text label" x="310" y="38">Expiry</text>
+    <text class="text small muted" x="310" y="68">Short-lived session only</text>
+    <rect class="ok" x="570" y="0" width="250" height="98" rx="14"/>
+    <text class="text label" x="595" y="38">One-time use</text>
+    <text class="text small muted" x="595" y="68">Reject replayed scans</text>
+    <rect class="ok" x="855" y="0" width="250" height="98" rx="14"/>
+    <text class="text label" x="880" y="38">Officer policy</text>
+    <text class="text small muted" x="880" y="68">Role and app permission</text>
+  </g>
+  <text class="text small muted" x="210" y="805">Final statuses: VERIFIED, REJECTED, EXPIRED, CANCELED, or PENDING.</text>
+
+  <rect class="warn" x="80" y="880" width="1440" height="64" rx="14"/>
+  <text class="text label" x="115" y="919">Developer rule:</text>
+  <text class="text small muted" x="245" y="919">Update business records only after validating callback signature, event ID, session ID, client ID, timestamp, and environment.</text>
+</svg>

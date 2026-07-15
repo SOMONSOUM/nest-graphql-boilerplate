@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import {
   CallBackResponse,
@@ -15,10 +15,8 @@ import { CurrentUser } from './decorator';
 import {
   CallBackInput,
   GetLoginTokenInput,
-  LoginInput,
   RefreshTokenInput,
 } from './dto/input';
-import { LoginResponse } from './dto/response/login.response';
 
 @Resolver()
 export class AuthResolver {
